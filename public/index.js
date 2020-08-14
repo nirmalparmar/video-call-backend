@@ -12,7 +12,7 @@
 
 
 
-var socket = io.connect('http://localhost:5000'); 
+var socket = io.connect(window.location.origin); 
 
 var answersFrom = {}, offer;
 var peerConnection = window.RTCPeerConnection ||

@@ -52,7 +52,7 @@ navigator.mediaDevices.getUserMedia({video: true, audio: true}).then( stream => 
 //     vid.srcObject = obj.stream;
 // }
 
-
+let remoteStream = new MediaStream();
 const remoteVideo = document.querySelector('#video-remote');
 remoteVideo.srcObject = remoteStream;
 

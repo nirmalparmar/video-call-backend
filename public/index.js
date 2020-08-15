@@ -13,14 +13,18 @@
 
 
 var socket = io.connect(window.location.origin); 
-
+const configuration = {
+    iceServers: [
+      {
+        urls: [
+          'stun:stun1.l.google.com:19302',
+          'stun:stun2.l.google.com:19302',
+        ],
+      },
+    ]
+};
 var answersFrom = {}, offer;
-let pc = new RTCPeerConnection({
-    iceServers: [{
-        url:['stun:stun1.l.google.com:19302',
-            'stun:stun2.l.google.com:19302',]
-    }]
-});
+let pc = new RTCPeerConnection(configuration);
 
 let localStream = navigator.getUserMedia({video: true, audio: true})
 const localVideo = document.getElementsByClassName('video-local');

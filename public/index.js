@@ -15,10 +15,9 @@
 var socket = io.connect(window.location.origin); 
 
 var answersFrom = {}, offer;
-var pc = new RTCPeerConnection({
+let pc = new RTCPeerConnection({
     iceServers: [{
-        url:["stun:stun.services.mozilla.com",
-            'stun:stun1.l.google.com:19302',
+        url:['stun:stun1.l.google.com:19302',
             'stun:stun2.l.google.com:19302',]
     }]
 });

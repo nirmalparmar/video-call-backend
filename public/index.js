@@ -25,13 +25,17 @@ const configuration = {
 };
 var answersFrom = {}, offer;
 let pc = new RTCPeerConnection(configuration);
-navigator.mediaDevices.getUserMedia({video: true, audio: true}).then( stream => {
-    const localVideo = document.querySelector('#video-local');
-    localVideo.srcObject = stream;
-    stream.getTracks().forEach(track => {
-    pc.addTrack(track, stream);
-});
-})
+
+function setLocalMediaStream(){
+    navigator.mediaDevices.getUserMedia({video: true, audio: true}).then( stream => {
+        const localVideo = document.querySelector('#video-local');
+        localVideo.srcObject = stream;
+        stream.getTracks().forEach(track => {
+            pc.addTrack(track, stream);
+        });
+    })
+}
+
 
 
 
@@ -70,8 +74,15 @@ pc.addEventListener('track', async (event) => {
 
 socket.on('add-users', function (data) {
     let userIdDiv = document.querySelector("#userId");
-    userIdDiv.innerHTML = data.userId;
-    createOffer(data.userId);
+    userIdDiv.appendChild(
+        document.createElement('ul').innerHTML = data.userId
+    );
+    let idBtn = document.querySelector('button');
+    idBtn.addEventListener('click', (e)=>{
+        let id = idBtn.innerHTML;
+        createOffer(id);
+    })
+    // createOffer(data.userId);
 });
 
 socket.on('remove-user', function (id) {
@@ -82,20 +93,16 @@ socket.on('remove-user', function (id) {
 socket.on('offer-made', async (data) => {
     await pc.setRemoteDescription(data.offer);
     let answer = await pc.createAnswer();
+    setLocalMediaStream();
     socket.emit('make-answer', {
         answer:answer,
         to:data.id
     });
 });
 
-socket.on('answer-made', function (data) {
-    pc.setRemoteDescription(data.answer, function () {
-        // document.getElementById(data.socket).setAttribute('class', 'active');
-        if (!answersFrom[data.socket]) {
-            createOffer(data.socket);
-            answersFrom[data.socket] = true;
-        }
-    }, error);
+socket.on('answer-made', async (data) => {
+    await pc.setRemoteDescription(data.answer);
+    setLocalMediaStream();
 });
 
 async function createOffer(id) {

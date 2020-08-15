@@ -3,7 +3,7 @@ const express = require("express");
 const socket = require('socket.io');
 const { static } = require('express');
 let port = process.env.PORT || 5000;
-let socketsArray = [];
+// let socketsArray = [];
 const app = express();
 
 app.use(express.static('public'));
@@ -19,8 +19,8 @@ const server = app.listen(port, () =>{
 const io = socket(server);
 
 io.on('connection', (socket) => {
-    socket.broadcast.emit('add-users', {
-        users: [socket.id]
+    socket.broadcast.emit('add-user', {
+        userId: socket.id
     });
 
     socket.on('disconnect', () => {

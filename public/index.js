@@ -69,10 +69,9 @@ pc.addEventListener('track', async (event) => {
 
 
 socket.on('add-users', function (data) {
-    for (var i = 0; i < data.users.length; i++) {
-            id = data.users[i];
-            createOffer(id);
-    }
+    let userIdDiv = document.querySelector("#userId");
+    userIdDiv.innerHTML = data.userId;
+    createOffer(data.userId);
 });
 
 socket.on('remove-user', function (id) {
@@ -80,20 +79,13 @@ socket.on('remove-user', function (id) {
 });
 
 
-socket.on('offer-made', function (data) {
-    offer = data.offer;
-
-    pc.setRemoteDescription(data.offer , function () {
-        pc.createAnswer(function (answer) {
-            pc.setLocalDescription(new sessionDescription(answer), function () {
-                socket.emit('make-answer', {
-                    answer: answer,
-                    to: data.id
-                });
-            }, error);
-        }, error);
-    }, error);
-
+socket.on('offer-made', async (data) => {
+    await pc.setRemoteDescription(data.offer);
+    let answer = await pc.createAnswer();
+    socket.emit('make-answer' {
+        answer:answer,
+        to:data.id
+    });
 });
 
 socket.on('answer-made', function (data) {
@@ -106,15 +98,13 @@ socket.on('answer-made', function (data) {
     }, error);
 });
 
-function createOffer(id) {
-    pc.createOffer(function (offer) {
-        pc.setLocalDescription(offer, function () {
-            socket.emit('make-offer', {
-                offer: offer,
-                to: id
-            });
-        }, error);
-    }, error);
+async function createOffer(id) {
+    let offer = await pc.createOffer();
+    await pc.setLocalDescription(offer);
+    socket.emit('make-offer', {
+        offer:offer,
+        to:id
+    })
 }
 
 function error(err) {

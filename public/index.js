@@ -53,11 +53,12 @@ navigator.mediaDevices.getUserMedia({video: true, audio: true}).then( stream => 
 // }
 
 let remoteStream = new MediaStream();
-const remoteVideo = document.querySelector('#video-remote');
-remoteVideo.srcObject = remoteStream;
+
 
 pc.addEventListener('track', async (event) => {
-    remoteStream.addTrack(event.track, remoteStream);
+    let remoteStr = remoteStream.addTrack(event.track, remoteStream);
+    const remoteVideo = document.querySelector('#video-remote');
+    remoteVideo.srcObject = remoteStr;
 });
 
 // navigator.getUserMedia({video: true, audio: true}, function (stream) {

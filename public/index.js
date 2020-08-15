@@ -26,7 +26,7 @@ const configuration = {
 var answersFrom = {}, offer;
 let pc = new RTCPeerConnection(configuration);
 navigator.mediaDevices.getUserMedia({video: true, audio: true}).then( stream => {
-    const localVideo = document.getElementsByClassName('video-local');
+    const localVideo = document.querySelector('#video-local');
     localVideo.srcObject = stream;
     stream.getTracks().forEach(track => {
     pc.addTrack(track, stream);
@@ -52,8 +52,8 @@ navigator.mediaDevices.getUserMedia({video: true, audio: true}).then( stream => 
 //     vid.srcObject = obj.stream;
 // }
 
-const remoteStream = MediaStream();
-const remoteVideo = document.getElementsByClassName('video-remote');
+
+const remoteVideo = document.querySelector('#video-remote');
 remoteVideo.srcObject = remoteStream;
 
 pc.addEventListener('track', async (event) => {

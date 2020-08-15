@@ -25,8 +25,10 @@ const configuration = {
 };
 var answersFrom = {}, offer;
 let pc = new RTCPeerConnection(configuration);
-
-let localStream = navigator.getUserMedia({video: true, audio: true})
+let localStream = MediaStream();
+navigator.mediaDevices.getUserMedia({video: true, audio: true}).then( stream => {
+    localStream = stream;
+})
 const localVideo = document.getElementsByClassName('video-local');
 localVideo.srcObject = remoteStream;
 

@@ -25,17 +25,16 @@ const configuration = {
 };
 var answersFrom = {}, offer;
 let pc = new RTCPeerConnection(configuration);
-let localStream = null;
 navigator.mediaDevices.getUserMedia({video: true, audio: true}).then( stream => {
-    localStream = stream;
     const localVideo = document.getElementsByClassName('video-local');
-    localVideo.srcObject = localStream;
+    localVideo.srcObject = stream;
+    stream.getTracks().forEach(track => {
+    pc.addTrack(track, stream);
+});
 })
 
 
-localStream.getTracks().forEach(track => {
-    pc.addTrack(track, localStream);
-});
+
 // var pc = new peerConnection({
 //     iceServers: [{
 //         url:["stun:stun.services.mozilla.com",

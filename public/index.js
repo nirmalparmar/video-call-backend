@@ -25,9 +25,13 @@ const configuration = {
 };
 var answersFrom = {}, offer;
 let pc = new RTCPeerConnection(configuration);
-let localStream = await navigator.mediaDevices.getUserMedia({video: true, audio: true});
-const localVideo = document.getElementsByClassName('video-local');
-localVideo.srcObject = remoteStream;
+let localStream = null;
+navigator.mediaDevices.getUserMedia({video: true, audio: true}).then( stream => {
+    localStream = stream;
+    const localVideo = document.getElementsByClassName('video-local');
+    localVideo.srcObject = localStream;
+})
+
 
 localStream.getTracks().forEach(track => {
     pc.addTrack(track, localStream);

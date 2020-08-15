@@ -82,7 +82,7 @@ socket.on('remove-user', function (id) {
 socket.on('offer-made', async (data) => {
     await pc.setRemoteDescription(data.offer);
     let answer = await pc.createAnswer();
-    socket.emit('make-answer' {
+    socket.emit('make-answer', {
         answer:answer,
         to:data.id
     });

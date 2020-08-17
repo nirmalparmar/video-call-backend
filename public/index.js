@@ -17,9 +17,6 @@ const configuration = {
 
 let pc = new RTCPeerConnection(configuration);
 
-pc.addEventListener('icecandidate', handleIcecandidate);
-pc.addEventListener('track', handleRemoteStream);
-
 socket.on('add-user', handleAddUser);
 socket.on('get-users', handleGetUsers);
 socket.on('remove-user', handleRemoveUser);
@@ -29,22 +26,25 @@ socket.on('new-ice-candidate', handleNewIcecandidate);
 
 
 function handleAddUser(data){
-    let node = document.createElement('li');
+    let node = document.createElement('button');
     node.setAttribute('id', data.userId);
     node.innerText = data.userId;
     userIdsDiv.appendChild(node);
     node.addEventListener('click', () => {
-        createOffer(data.userId);
+        callUser(data.userId);
     })
 }
 
 function handleGetUsers(data){
     // console.log(data);
     data.users.forEach(id => {
-        let node = document.createElement('li');
+        let node = document.createElement('button');
         node.setAttribute('id', id);
         node.innerText = id;
         userIdsDiv.appendChild(node);
+        node.addEventListener('click', () => {
+            callUser(id);
+        })
     })
 }
 
@@ -65,7 +65,15 @@ async function createOffer(id){
     addTrack();
 }
 
+function callUser(id){
+    peerConnectionListener();
+    createOffer(id);
+}
+
 async function handleOffer(data){
+    console.log("offer received")
+    remoteSocket = data.id;
+    peerConnectionListener();
     let offer = new RTCSessionDescription(data.offer)
     await pc.setRemoteDescription(offer);
     let answer = await pc.createAnswer();
@@ -79,8 +87,10 @@ async function handleOffer(data){
 }
 
 async function handleAnswer(data){
+    console.log("answer received");
     let answer = new RTCSessionDescription(data.answer);
     await pc.setRemoteDescription(answer);
+    return;
 }
 
 function addTrack(){
@@ -101,6 +111,7 @@ function handleRemoteStream(ev){
 }
 
 function handleIcecandidate(ev){
+    console.log('ice-candidate' + JSON.stringify(ev.candidate));
     if(ev.candidate){
         let payload = {
             candidate:ev.candidate,
@@ -111,12 +122,20 @@ function handleIcecandidate(ev){
 }
 
 function handleNewIcecandidate(data){
-    let candidate = new RTCIceCandidate(data.candidate);
-    pc.addIceCandidate(candidate).then( res => {
-        console.log("candidate added" + res);
-    }).catch(e => {
-        console.log(e);
-    })
+    console.log("new ice-candidate" + JSON.stringify(data.candidate));
+    if(data.candidate){
+        let candidate = new RTCIceCandidate(data.candidate);
+        pc.addIceCandidate(candidate).then( res => {
+            console.log("candidate added" + res);
+        }).catch(e => {
+            console.log(e);
+        })
+    }
+}
+
+function peerConnectionListener(){
+    pc.addEventListener('icecandidate', handleIcecandidate);
+    pc.addEventListener('track', handleRemoteStream);
 }
 
 

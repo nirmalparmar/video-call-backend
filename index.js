@@ -1,8 +1,6 @@
 require('dotenv').config();
 const express = require("express");
 const socket = require('socket.io');
-const { static } = require('express');
-const { Socket } = require('socket.io-client');
 let port = process.env.PORT || 5000;
 let socketsArray = [];
 const app = express();

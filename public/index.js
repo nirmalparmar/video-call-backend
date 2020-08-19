@@ -17,6 +17,9 @@ const configuration = {
 
 let pc = new RTCPeerConnection(configuration);
 
+pc.addEventListener('icecandidate', handleIcecandidate);
+pc.addEventListener('track', handleRemoteStream);
+
 socket.on('add-user', handleAddUser);
 socket.on('get-users', handleGetUsers);
 socket.on('remove-user', handleRemoveUser);
@@ -66,14 +69,12 @@ async function createOffer(id){
 }
 
 function callUser(id){
-    peerConnectionListener();
     createOffer(id);
 }
 
 async function handleOffer(data){
     console.log("offer received")
     remoteSocket = data.id;
-    peerConnectionListener();
     let offer = new RTCSessionDescription(data.offer)
     await pc.setRemoteDescription(offer);
     let answer = await pc.createAnswer();
@@ -131,11 +132,6 @@ function handleNewIcecandidate(data){
             console.log(e);
         })
     }
-}
-
-function peerConnectionListener(){
-    pc.addEventListener('icecandidate', handleIcecandidate);
-    pc.addEventListener('track', handleRemoteStream);
 }
 
 
